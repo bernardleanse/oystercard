@@ -3,6 +3,7 @@
 require './lib/card'
 
 MAX_BALANCE = Oystercard::MAX_BALANCE
+MIN_JOURNEY_COST = Oystercard::MIN_JOURNEY_COST
 
 describe Oystercard do
   describe '#balance' do
@@ -40,17 +41,23 @@ describe Oystercard do
   describe '#touch_in' do
     it { is_expected.to respond_to(:touch_in) }
     it 'return true when touching in' do
+      subject.top_up(MIN_JOURNEY_COST)
       expect(subject.touch_in). to eq true
     end
     it 'raises an error if you try touching in whilst on a journey' do
+      subject.top_up(MIN_JOURNEY_COST)
       subject.touch_in
       expect { subject.touch_in }.to raise_error("Cannot touch in, already on journey")
+    end
+    it 'raises an error if you try touching in with less than min balance' do
+      expect { subject.touch_in }.to raise_error("Cannot touch in, balance is below min balance")
     end
   end
 
   describe '#touch_out' do
     it { is_expected.to respond_to(:touch_out) }
     it 'return false when touching out' do
+      subject.top_up(MIN_JOURNEY_COST)
       subject.touch_in
       expect(subject.touch_out). to eq false
     end

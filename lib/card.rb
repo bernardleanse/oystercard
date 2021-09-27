@@ -5,6 +5,7 @@ class Oystercard
 
   DEFAULT_BALANCE = 0
   MAX_BALANCE = 90
+  MIN_JOURNEY_COST = 1
 
   def initialize
     @balance = DEFAULT_BALANCE
@@ -21,6 +22,7 @@ class Oystercard
   end
 
   def touch_in
+    raise "Cannot touch in, balance is below min balance" if below_min_balance?
     raise "Cannot touch in, already on journey" if @on_journey
     @on_journey = true
   end
@@ -28,6 +30,10 @@ class Oystercard
   def touch_out
     raise "Cannot touch out, not on a journey" if not @on_journey
     @on_journey = false
+  end
+
+  def below_min_balance?
+    @balance < MIN_JOURNEY_COST
   end
 
 end
