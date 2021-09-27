@@ -8,6 +8,7 @@ class Oystercard
 
   def initialize
     @balance = DEFAULT_BALANCE
+    @on_journey = false
   end
 
   def top_up(amount)
@@ -17,6 +18,16 @@ class Oystercard
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def touch_in
+    raise "Cannot touch in, already on journey" if @on_journey
+    @on_journey = true
+  end
+
+  def touch_out
+    raise "Cannot touch out, not on a journey" if not @on_journey
+    @on_journey = false
   end
 
 end

@@ -36,4 +36,26 @@ describe Oystercard do
       expect { subject.deduct(10) }.to change { subject.balance }.by -10
     end
   end
+
+  describe '#touch_in' do
+    it { is_expected.to respond_to(:touch_in) }
+    it 'return true when touching in' do
+      expect(subject.touch_in). to eq true
+    end
+    it 'raises an error if you try touching in whilst on a journey' do
+      subject.touch_in
+      expect { subject.touch_in }.to raise_error("Cannot touch in, already on journey")
+    end
+  end
+
+  describe '#touch_out' do
+    it { is_expected.to respond_to(:touch_out) }
+    it 'return false when touching out' do
+      subject.touch_in
+      expect(subject.touch_out). to eq false
+    end
+    it 'raises an error if you try touching out whilst not on a journey' do
+      expect { subject.touch_out }.to raise_error("Cannot touch out, not on a journey")
+    end
+  end
 end
