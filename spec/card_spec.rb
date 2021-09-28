@@ -93,7 +93,5 @@ describe Oystercard do
       subject.touch_out(station2)
       expect(subject.list_of_journeys.count).to eq 1
     end
-
   end
-
 end

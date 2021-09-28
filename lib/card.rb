@@ -23,6 +23,7 @@ class Oystercard
   def touch_in(station_name)
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
     raise 'Cannot touch in, already on journey' if on_journey?
+
     start_journey(station_name)
   end
 
@@ -63,5 +64,4 @@ class Oystercard
     current_journey = { entry_station: entry_station, exit_station: exit_station } # change current journey to an instance variable in case we need to change how we track whether there is a current journey
     @list_of_journeys.append(current_journey)
   end
-
 end
