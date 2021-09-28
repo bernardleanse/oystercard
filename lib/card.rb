@@ -1,7 +1,7 @@
 # frozen_string_liructeral: true
 
 class Oystercard
-  attr_reader :balance
+  attr_reader :balance, :entry_station
 
   DEFAULT_BALANCE = 0
   MAX_BALANCE = 90
@@ -9,7 +9,7 @@ class Oystercard
 
   def initialize
     @balance = DEFAULT_BALANCE
-    @on_journey = false
+    @entry_station = nil # can we remove this?
   end
 
   def top_up(amount)
@@ -18,18 +18,18 @@ class Oystercard
     @balance += amount
   end
 
-  def touch_in
+  def touch_in(station_name)
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
-    raise 'Cannot touch in, already on journey' if @on_journey
+    raise 'Cannot touch in, already on journey' if on_journey?
 
-    @on_journey = true
+    @entry_station = station_name
   end
 
   def touch_out
-    raise 'Cannot touch out, not on a journey' unless @on_journey
+    raise 'Cannot touch out, not on a journey' unless on_journey?
 
     deduct(MIN_FARE)
-    @on_journey = false
+    @entry_station = nil
   end
 
   private
@@ -40,5 +40,10 @@ class Oystercard
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def on_journey?
+    # could switch to !!
+    !entry_station.nil?
   end
 end

@@ -32,35 +32,37 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
-    it { is_expected.to respond_to(:touch_in) }
-    it 'return true when touching in' do
-      subject.top_up(MIN_FARE)
-      expect(subject.touch_in).to eq true
-    end
+    let(:station) { double :station }
     it 'raises an error if you try touching in whilst on a journey' do
       subject.top_up(MIN_FARE)
-      subject.touch_in
-      expect { subject.touch_in }.to raise_error('Cannot touch in, already on journey')
+      subject.touch_in(station)
+      expect { subject.touch_in(station) }.to raise_error('Cannot touch in, already on journey')
     end
     it 'raises an error if you try touching in with less than min balance' do
-      expect { subject.touch_in }.to raise_error('Cannot touch in, balance is below min balance')
+      expect { subject.touch_in(station) }.to raise_error('Cannot touch in, balance is below min balance')
+    end
+    it 'records the entry station name on touch in' do
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      expect(subject.entry_station).to eq station
     end
   end
 
   describe '#touch_out' do
-    it { is_expected.to respond_to(:touch_out) }
-    it 'return false when touching out' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in
-      expect(subject.touch_out).to eq false
-    end
+    let(:station) { double :station }
     it 'raises an error if you try touching out whilst not on a journey' do
       expect { subject.touch_out }.to raise_error('Cannot touch out, not on a journey')
     end
     it 'deducts min_fare when you touch_out' do
       subject.top_up(MIN_FARE)
-      subject.touch_in
+      subject.touch_in(station)
       expect { subject.touch_out }.to change { subject.balance }.by(- MIN_FARE)
+    end
+    it 'expects entry station to be nil on touch out' do
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      subject.touch_out
+      expect(subject.entry_station).to eq nil
     end
   end
 end
