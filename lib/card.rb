@@ -1,4 +1,4 @@
-# frozen_string_liructeral: true
+# frozen_string_literal: true
 
 class Oystercard
   attr_reader :balance, :entry_station, :exit_station, :list_of_journeys
@@ -23,18 +23,14 @@ class Oystercard
   def touch_in(station_name)
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
     raise 'Cannot touch in, already on journey' if on_journey?
-    @exit_station = nil
-    @entry_station = station_name
+    start_journey(station_name)
   end
 
   def touch_out(station_name)
     raise 'Cannot touch out, not on a journey' unless on_journey?
-    
-    @exit_station = station_name
-    @current_journey = { entry_station: entry_station, exit_station: exit_station }
-    @list_of_journeys.append(@current_journey)
+
+    end_journey(station_name)
     deduct(MIN_FARE)
-    @entry_station = nil
   end
 
   private
@@ -51,4 +47,21 @@ class Oystercard
     # could switch to !!
     !entry_station.nil?
   end
+
+  def start_journey(station_name)
+    @exit_station = nil
+    @entry_station = station_name
+  end
+
+  def end_journey(station_name)
+    @exit_station = station_name
+    store_complete_journey
+    @entry_station = nil
+  end
+
+  def store_complete_journey
+    current_journey = { entry_station: entry_station, exit_station: exit_station } # change current journey to an instance variable in case we need to change how we track whether there is a current journey
+    @list_of_journeys.append(current_journey)
+  end
+
 end
