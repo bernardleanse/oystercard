@@ -50,19 +50,50 @@ describe Oystercard do
 
   describe '#touch_out' do
     let(:station) { double :station }
+    let(:station2) { double :station }
     it 'raises an error if you try touching out whilst not on a journey' do
-      expect { subject.touch_out }.to raise_error('Cannot touch out, not on a journey')
+      expect { subject.touch_out(station2) }.to raise_error('Cannot touch out, not on a journey')
     end
     it 'deducts min_fare when you touch_out' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
-      expect { subject.touch_out }.to change { subject.balance }.by(- MIN_FARE)
+      expect { subject.touch_out(station2) }.to change { subject.balance }.by(- MIN_FARE)
     end
     it 'expects entry station to be nil on touch out' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
-      subject.touch_out
+      subject.touch_out(station2)
       expect(subject.entry_station).to eq nil
     end
+    it 'records the exit station name on touch out' do
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      subject.touch_out(station2)
+      expect(subject.exit_station).to eq station2
+    end
+    it 'expects exit station to be nil after touch out' do
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      subject.touch_out(station2)
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      expect(subject.exit_station).to eq nil
+    end
   end
+
+  describe 'list_of_journeys' do
+    let(:station) { double :station }
+    let(:station2) { double :station }
+    it 'is initialised with an empty array of journeys' do
+      expect(subject.list_of_journeys.empty?).to eq true
+    end
+    it 'stores a single journey when one journey is made' do
+      subject.top_up(MIN_FARE)
+      subject.touch_in(station)
+      subject.touch_out(station2)
+      expect(subject.list_of_journeys.count).to eq 1
+    end
+
+  end
+
 end
