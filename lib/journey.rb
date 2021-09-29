@@ -1,20 +1,23 @@
 class Journey
   MIN_FARE = 1
-  PENALTY_FARE = 6
+  # PENALTY_FARE = 6
 
-  def initialize(entry_station)
-    @entry_station = entry_station
-    @exit_station = nil
+  attr_reader :entry_station, :exit_station
+
+  def start(station_name)
+    @entry_station = station_name
+  end
+
+  def end(station_name)
+    @exit_station = station_name
+  end
+
+  def on_journey?
+    @entry_station && exit_station.nil? # check this logic
   end
   
   def fare
-    deduct(MIN_FARE) # ------> Journey
-  end
-
-  def end_journey(station_name) # ------> Journey
-    @exit_station = station_name
-    
-    # @entry_station = nil
+    MIN_FARE
   end
 
 end

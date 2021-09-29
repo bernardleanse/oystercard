@@ -37,6 +37,7 @@ describe Oystercard do
     it 'raises an error if you try touching in whilst on a journey' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
+      subject.top_up(MIN_FARE)
       expect { subject.touch_in(station) }.to raise_error('Cannot touch in, already on journey')
     end
     it 'raises an error if you try touching in with less than min balance' do
@@ -45,7 +46,7 @@ describe Oystercard do
     it 'records the entry station name on touch in' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
-      expect(subject.entry_station).to eq station
+      expect(subject.journey.entry_station).to eq station
     end
   end
 
@@ -60,25 +61,11 @@ describe Oystercard do
       subject.touch_in(station)
       expect { subject.touch_out(station2) }.to change { subject.balance }.by(- MIN_FARE)
     end
-    it 'expects entry station to be nil on touch out' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect(subject.entry_station).to eq nil
-    end
     it 'records the exit station name on touch out' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
       subject.touch_out(station2)
-      expect(subject.exit_station).to eq station2
-    end
-    it 'expects exit station to be nil after touch out' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      expect(subject.exit_station).to eq nil
+      expect(subject.journey.exit_station).to eq station2
     end
   end
 
