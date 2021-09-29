@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require './lib/card'
+require './lib/journey'
 
 MAX_BALANCE = Oystercard::MAX_BALANCE
-MIN_FARE = Oystercard::MIN_FARE
+MIN_FARE = Journey::MIN_FARE
 
 describe Oystercard do
   describe '#balance' do
