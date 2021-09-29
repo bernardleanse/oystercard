@@ -28,7 +28,7 @@ describe Oystercard do
     end
 
     it 'rejects top ups that exceed the max balance' do
-      expect { subject.top_up(91) }.to raise_error("This exceeds max balance of #{MAX_BALANCE}")
+      expect { subject.top_up(MAX_BALANCE + 1) }.to raise_error("This exceeds max balance of #{MAX_BALANCE}")
     end
   end
 
@@ -56,17 +56,21 @@ describe Oystercard do
     it 'raises an error if you try touching out whilst not on a journey' do
       expect { subject.touch_out(station2) }.to raise_error('Cannot touch out, not on a journey')
     end
+    
     it 'deducts min_fare when you touch_out' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
+      subject.touch_out(station2)
       expect { subject.touch_out(station2) }.to change { subject.balance }.by(- MIN_FARE)
     end
+
     it 'records the exit station name on touch out' do
       subject.top_up(MIN_FARE)
       subject.touch_in(station)
       subject.touch_out(station2)
       expect(subject.journey.exit_station).to eq station2
     end
+    
   end
 
   describe 'list_of_journeys' do
