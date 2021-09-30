@@ -32,66 +32,78 @@ describe Oystercard do
     end
   end
 
-  describe '#touch_in' do
 
-    let(:station1) { double :station }
-    let(:station2) { double :station }
-    let(:journey) { double(:journey, entry_station: station, exit_station: station2) }
-    let(:card) { Oystercard.new(journey) }
-    
-    it 'raises an error if you try touching in whilst on a journey' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station1)
-      subject.top_up(MIN_FARE)
-      expect { subject.touch_in(station1) }.to raise_error('Cannot touch in, already on journey')
+  context "touching in and out" do
+
+      let(:station1) { double :station }
+      let(:station2) { double :station }
+      let(:journey) { double(:journey, start: station1, end: station2, entry_station: station1, exit_station: station2) }
+      let(:j_class) { double(:journey, new: journey)}
+      let(:card) { Oystercard.new(j_class) }
+
+    describe '#touch_in' do
+
+      
+      it 'raises an error if you try touching in whilst on a journey' do
+
+        card.top_up(MIN_FARE)
+        card.touch_in(station1)
+        card.top_up(MIN_FARE)
+        expect { card.touch_in(station1) }.to raise_error('Cannot touch in, already on journey')
+      end
+
+      it 'raises an error if you try touching in with less than min balance' do
+        expect { card.touch_in(station1) }.to raise_error('Cannot touch in, balance is below min balance')
+      end
+
+      it 'records the entry station name on touch in' do
+        card.top_up(MIN_FARE)
+        card.touch_in(station1)
+        expect(card.current_journey.entry_station).to eq station1
+      end
+
     end
 
-    it 'raises an error if you try touching in with less than min balance' do
-      expect { subject.touch_in(station1) }.to raise_error('Cannot touch in, balance is below min balance')
+    describe '#touch_out' do
+
+      it 'raises an error if you try touching out whilst not on a journey' do
+        expect { card.touch_out(station2) }.to raise_error('Cannot touch out, not on a journey')
+      end
+      
+      it 'deducts min_fare when you touch_out' do
+        card.top_up(MIN_FARE)
+        card.touch_in(station1)
+        card.touch_out(station2)
+        expect { card.touch_out(station2) }.to change { card.balance }.by(- MIN_FARE)
+      end
+
+      it 'records the exit station name on touch out' do
+        card.top_up(MIN_FARE)
+        card.touch_in(station1)
+        card.touch_out(station2)
+        expect(card.current_journey.exit_station).to eq station2
+      end
+      
     end
 
-    it 'records the entry station name on touch in' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station1)
-      expect(subject.journey.entry_station).to eq station
-    end
-
-  end
-
-  describe '#touch_out' do
-    let(:station) { double :station }
-    let(:station2) { double :station }
-    it 'raises an error if you try touching out whilst not on a journey' do
-      expect { subject.touch_out(station2) }.to raise_error('Cannot touch out, not on a journey')
-    end
-    
-    it 'deducts min_fare when you touch_out' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect { subject.touch_out(station2) }.to change { subject.balance }.by(- MIN_FARE)
-    end
-
-    it 'records the exit station name on touch out' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect(subject.journey.exit_station).to eq station2
-    end
-    
   end
 
   describe 'list_of_journeys' do
-    let(:station) { double :station }
+    let(:station1) { double :station }
     let(:station2) { double :station }
+    let(:journey) { double(:journey, start: station1, end: station2, entry_station: station1, exit_station: station2, fare: MIN_FARE) }
+    let(:j_class) { double(:journey, new: journey)}
+    let(:card) { Oystercard.new(j_class) }
+
     it 'is initialised with an empty array of journeys' do
-      expect(subject.list_of_journeys.empty?).to eq true
+      expect(card.list_of_journeys.empty?).to eq true
     end
+
     it 'stores a single journey when one journey is made' do
-      subject.top_up(MIN_FARE)
-      subject.touch_in(station)
-      subject.touch_out(station2)
-      expect(subject.list_of_journeys.count).to eq 1
+      card.top_up(MIN_FARE)
+      card.touch_in(station1)
+      card.touch_out(station2)
+      expect(card.list_of_journeys.count).to eq 1
     end
   end
 end

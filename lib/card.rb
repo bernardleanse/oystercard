@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Oystercard
-  attr_reader :balance, :list_of_journeys, :journey
+  attr_reader :balance, :list_of_journeys, :current_journey, :journey
   DEFAULT_BALANCE = 0
   MAX_BALANCE = 90
 
@@ -9,6 +9,7 @@ class Oystercard
     @balance = DEFAULT_BALANCE
     @list_of_journeys = []
     @journey = journey
+    @current_journey = nil
   end
 
   def top_up(amount)
@@ -20,15 +21,15 @@ class Oystercard
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
     raise 'Cannot touch in, already on journey' if on_journey?
 
-    @journey = @journey.new
-    @journey.start(station_name)
+    @current_journey = @journey.new
+    @current_journey.start(station_name)
   end
 
   def touch_out(station_name)
     raise 'Cannot touch out, not on a journey' unless on_journey?
 
     charge
-    @journey.end(station_name)
+    @current_journey.end(station_name)
     store_journey
   end
 
@@ -47,15 +48,15 @@ class Oystercard
   end
 
   def on_journey?
-    !@journey.nil?
+    !@current_journey.nil?
   end
 
   def store_journey
-    @list_of_journeys.append(@journey)
+    @list_of_journeys.append(@current_journey)
   end
 
   def charge
-    @balance -= journey.fare
+    @balance -= current_journey.fare
   end
 
 end
