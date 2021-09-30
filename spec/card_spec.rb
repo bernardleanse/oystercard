@@ -33,21 +33,29 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
-    let(:station) { double :station }
+
+    let(:station1) { double :station }
+    let(:station2) { double :station }
+    let(:journey) { double(:journey, entry_station: station, exit_station: station2) }
+    let(:card) { Oystercard.new(journey) }
+    
     it 'raises an error if you try touching in whilst on a journey' do
       subject.top_up(MIN_FARE)
-      subject.touch_in(station)
+      subject.touch_in(station1)
       subject.top_up(MIN_FARE)
-      expect { subject.touch_in(station) }.to raise_error('Cannot touch in, already on journey')
+      expect { subject.touch_in(station1) }.to raise_error('Cannot touch in, already on journey')
     end
+
     it 'raises an error if you try touching in with less than min balance' do
-      expect { subject.touch_in(station) }.to raise_error('Cannot touch in, balance is below min balance')
+      expect { subject.touch_in(station1) }.to raise_error('Cannot touch in, balance is below min balance')
     end
+
     it 'records the entry station name on touch in' do
       subject.top_up(MIN_FARE)
-      subject.touch_in(station)
+      subject.touch_in(station1)
       expect(subject.journey.entry_station).to eq station
     end
+
   end
 
   describe '#touch_out' do
