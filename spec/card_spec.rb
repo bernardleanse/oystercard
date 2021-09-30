@@ -37,7 +37,7 @@ describe Oystercard do
 
       let(:station1) { double :station }
       let(:station2) { double :station }
-      let(:journey) { double(:journey, start: station1, end: station2, entry_station: station1, exit_station: station2) }
+      let(:journey) { double(:journey, start: station1, end: station2, entry_station: station1, exit_station: station2, fare: MIN_FARE) }
       let(:j_class) { double(:journey, new: journey) }
       let(:card) { Oystercard.new(j_class) }
 
