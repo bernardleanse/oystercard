@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 class Oystercard
-  attr_reader :balance, :list_of_journeys, :current_journey, :journey
+  attr_reader :balance, :list_of_journeys, :current_journey, :journey #
   DEFAULT_BALANCE = 0
   MAX_BALANCE = 90
 
-  def initialize(journey = Journey)
+  def initialize(journey = Journey) # might go altogether something like? (journey = JourneyLog.new.new_journey)
     @balance = DEFAULT_BALANCE
-    @list_of_journeys = []
-    @journey_class = journey
-    @current_journey = nil
+    @list_of_journeys = [] ##
+    @journey_class = journey # might become @journey_log = JourneyLog.new
+    @current_journey = nil #
+    # journey_log = JourneyLog.new
   end
 
   def top_up(amount)
@@ -19,18 +20,18 @@ class Oystercard
 
   def touch_in(station_name) 
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
-    raise 'Cannot touch in, already on journey' if on_journey?
+    raise 'Cannot touch in, already on journey' if on_journey? #
 
-    @current_journey = @journey_class.new
-    @current_journey.start(station_name)
+    @current_journey = @journey_class.new # no need for this 
+    @current_journey.start(station_name) # journey_log.start_journey(station_name) this might go into the above?
   end
 
   def touch_out(station_name)
-    raise 'Cannot touch out, not on a journey' unless on_journey?
+    raise 'Cannot touch out, not on a journey' unless on_journey? #change to !journey_log.current_journey.nil?
 
     charge
-    @current_journey.end(station_name)
-    store_journey
+    @current_journey.end(station_name) # journey_log.end_journey(station_name)
+    store_journey # this might go into the above?
   end
 
   private
@@ -43,16 +44,12 @@ class Oystercard
     @balance < MIN_FARE
   end
 
-  def deduct(amount)
-    @balance -= amount
-  end
-
   def on_journey?
-    !@current_journey.nil?
+    !@current_journey.nil? # !journey_log.current_journey.nil?
   end
 
   def store_journey
-    @list_of_journeys.append(@current_journey)
+    @list_of_journeys.append(@current_journey) # will probably disappear altogether
   end
 
   def charge
