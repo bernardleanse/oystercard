@@ -38,7 +38,7 @@ describe Oystercard do
       let(:station1) { double :station }
       let(:station2) { double :station }
       let(:journey) { double(:journey, start: station1, end: station2, entry_station: station1, exit_station: station2) }
-      let(:j_class) { double(:journey, new: journey)}
+      let(:j_class) { double(:journey, new: journey) }
       let(:card) { Oystercard.new(j_class) }
 
     describe '#touch_in' do
@@ -65,10 +65,11 @@ describe Oystercard do
     end
 
     describe '#touch_out' do
-
+      
       it 'raises an error if you try touching out whilst not on a journey' do
         expect { card.touch_out(station2) }.to raise_error('Cannot touch out, not on a journey')
       end
+  
       
       it 'deducts min_fare when you touch_out' do
         card.top_up(MIN_FARE)
@@ -83,6 +84,8 @@ describe Oystercard do
         card.touch_out(station2)
         expect(card.current_journey.exit_station).to eq station2
       end
+
+    
       
     end
 

@@ -8,7 +8,7 @@ class Oystercard
   def initialize(journey = Journey)
     @balance = DEFAULT_BALANCE
     @list_of_journeys = []
-    @journey = journey
+    @journey_class = journey
     @current_journey = nil
   end
 
@@ -21,7 +21,7 @@ class Oystercard
     raise 'Cannot touch in, balance is below min balance' if below_min_balance?
     raise 'Cannot touch in, already on journey' if on_journey?
 
-    @current_journey = @journey.new
+    @current_journey = @journey_class.new
     @current_journey.start(station_name)
   end
 
