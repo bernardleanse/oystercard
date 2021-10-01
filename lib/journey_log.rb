@@ -3,6 +3,7 @@ class JourneyLog
   def initialize(journey_class = Journey)
     @list_of_journeys = []
     @journey_class = journey_class
+    @current_journey = nil
   end
 
   def start_journey(station_name)
@@ -21,7 +22,7 @@ class JourneyLog
   end
 
   def print
-    list_of_journeys.each { |journey| puts "#{journey.entry_station} ----->  #{journey.exit_station}"}
+    @list_of_journeys.each { |journey| puts "#{journey.entry_station} ----->  #{journey.exit_station}"}
   end
 
   private
