@@ -23,6 +23,7 @@ class Journey
   def fare
     return MIN_FARE if @entry_station && @exit_station
     PENALTY_FARE
+    # charge = Charge.new(entry_station, exit_station)
   end
 
 end
